@@ -12,13 +12,16 @@ public class Car extends Thread{
 	private int runde = 0;
 	
 	private int anzahlrunden;
+
+	private Accident accident = new Accident();
+	public boolean hatteUnfall = false;
 		
 	public Car(int autoNummer, int anzahlrunden) {
 		this.autoNummer = autoNummer;
 		this.anzahlrunden = anzahlrunden;
 	}
 	
-	//radom zeit für runde
+	//radom zeit fuer runde
 	private void fahreRunde() throws InterruptedException {
 		int zufallszahl = new Random().nextInt(100); 
 		gesamtFahrzeit += zufallszahl;
@@ -29,17 +32,22 @@ public class Car extends Thread{
 	
 	@Override
 	public void run() {
-		Accident accident = new Accident();
 		accident.start();
-		while (!zielerreicht()) {
+		while (!zielerreicht() && !isInterrupted()) {
 			try {
-				fahreRunde();
+                fahreRunde();
+                unfallErgeinis();
+                if (hatteUnfall){
+                    interrupt();
+                }
+
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+//				e.printStackTrace();
 			}
 		}
-//		interrupt();
+		if (!accident.isInterrupted()) accident.interrupt();
+		interrupt();
 	}
 	
 	public int getRunde() {
@@ -53,9 +61,12 @@ public class Car extends Thread{
 	public int getGesamtFahrzeit() {
 		return gesamtFahrzeit;
 	}
-	
-	
-	@Override
+
+    public boolean isHatteUnfall() {
+        return hatteUnfall;
+    }
+
+    @Override
 	public String toString() {
 		return "Wagen " + String.valueOf(autoNummer) + "  Zeit: " + String.valueOf(gesamtFahrzeit) ;
 	}
@@ -64,6 +75,12 @@ public class Car extends Thread{
 		return runde == anzahlrunden;
 	}
 	
-	
+	public void unfallErgeinis(){
+		if (!accident.isAlive()) {
+			System.out.println("Unfall bei Wagen " + autoNummer + " in Runde " + runde);
+			hatteUnfall = true;
+		}
+//		return false;
+	}
 
 }

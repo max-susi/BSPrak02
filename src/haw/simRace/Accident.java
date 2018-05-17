@@ -7,10 +7,11 @@ public class Accident extends Thread{
 	@Override
 	public void run() {
 		try {
-			Thread.sleep(new Random().nextInt(Integer.MAX_VALUE));
+//			Thread.sleep(new Random().nextInt(Integer.MAX_VALUE));
+			Thread.sleep(new Random().nextInt(100));
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+//			e.printStackTrace();
 		}
 		
 		
