@@ -6,61 +6,62 @@ import java.util.List;
 
 public class Main {
 
-    static boolean abgebrochen = false;
+	static boolean abgebrochen = false;
 
-    public static void main(String[] args) {
-        int runden = 5;
-        int anzahlAutos = 5;
+	public static void main(String[] args) {
+		int runden = 5;
+		int anzahlAutos = 5;
 
-        List<Car> autosListe = new ArrayList<>();
+		List<Car> autosListe = new ArrayList<>();
 
-        for (int i = 0; i < anzahlAutos; i++) {
-            Car tempCar = new Car(i, runden);
-            autosListe.add(tempCar);
-            tempCar.start();
-        }
+		Accident accident = new Accident(autosListe);
+		accident.start();
+		for (int i = 0; i < anzahlAutos; i++) {
+			Car tempCar = new Car(i, runden, accident);
+			autosListe.add(tempCar);
+			tempCar.start();
+		}
 
-        while (!istRennenEnde(autosListe)) {
-        }
+//		try {
+//			for (Car car : autosListe) {
+//				car.join();
+//			}
+//		} catch (InterruptedException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 
-        if (!abgebrochen) {
-            System.out.println("**** Endstand ****");
-            autosListe.sort(new Comparator<Car>() {
+		while (!istRennenEnde(autosListe)) {
+		}
 
-                @Override
-                public int compare(Car o1, Car o2) {
-                    return Integer.compare(o1.getGesamtFahrzeit(), o2.getGesamtFahrzeit());
-                }
+		accident.interrupt();
 
-            });
-            for (Car car : autosListe) {
-                System.out.println(car.toString());
-            }
-        }
-    }
+		if (!abgebrochen) {
+			System.out.println("**** Endstand ****");
+			autosListe.sort(new Comparator<Car>() {
 
-    private static boolean istRennenEnde(List<Car> autosListe) {
+				@Override
+				public int compare(Car o1, Car o2) {
+					return Integer.compare(o1.getGesamtFahrzeit(), o2.getGesamtFahrzeit());
+				}
 
-        for (Car car : autosListe) {
-            if (!car.zielerreicht()) {
-                if (car.hatteUnfall) {
-                    rennAbbruch(autosListe);
-                    return true;
-                }
-//				System.out.println(car.toString() + " noch nicht fertig!!!");
-                return false;
+			});
+			for (Car car : autosListe) {
+				System.out.println(car.toString());
+			}
+		}
+	}
 
-            }
-        }
-        System.out.println("Rennen vorbei!!!!!");
-        return true;
-    }
+	private static boolean istRennenEnde(List<Car> autosListe) {
 
-    private static void rennAbbruch(List<Car> autosListe) {
-        System.out.println("Abbruch des Rennens!");
-        abgebrochen = true;
-        for (Car car : autosListe) {
-            car.interrupt();
-        }
-    }
+		for (Car car : autosListe) {
+			if (!car.zielerreicht() && !abgebrochen) {
+				return false;
+			}
+
+		}
+//		System.out.println("Rennen vorbei!!!!!");
+		return true;
+
+	}
 }
