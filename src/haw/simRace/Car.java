@@ -35,11 +35,8 @@ public class Car extends Thread{
 		accident.start();
 		while (!zielerreicht() && !isInterrupted()) {
 			try {
+                if (unfallErgeinis()) break;
                 fahreRunde();
-                unfallErgeinis();
-                if (hatteUnfall){
-                    interrupt();
-                }
 
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
@@ -75,12 +72,14 @@ public class Car extends Thread{
 		return runde == anzahlrunden;
 	}
 	
-	public void unfallErgeinis(){
+	public boolean unfallErgeinis(){
 		if (!accident.isAlive()) {
 			System.out.println("Unfall bei Wagen " + autoNummer + " in Runde " + runde);
 			hatteUnfall = true;
+            interrupt();
+			return true;
 		}
-//		return false;
+		return false;
 	}
 
 }

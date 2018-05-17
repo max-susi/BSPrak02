@@ -60,7 +60,7 @@ public class Main {
         System.out.println("Abbruch des Rennens!");
         abgebrochen = true;
         for (Car car : autosListe) {
-            if (!car.isInterrupted()) car.interrupt();
+            car.interrupt();
         }
     }
 }
